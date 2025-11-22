@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TinyLink - URL Shortener
 
-## Getting Started
+A small web app similar to bit.ly that allows users to shorten URLs, view click statistics, and manage links.  
 
-First, run the development server:
+Created by **Shravya Reddy**
+
+---
+
+## 🚀 Features
+
+- Create short links (custom code optional)
+- Redirect from short links to original URLs
+- View link statistics: clicks, last clicked
+- Delete links
+- Dashboard with copy button for generated links
+- Stats page for individual links (`/code/:code`)
+- Health check endpoint (`/healthz`)
+- Responsive UI with typing effect for input
+
+---
+
+## 📦 Tech Stack
+
+- **Backend:** Node.js + Express
+- **Database:** Neon (Postgres)
+- **Frontend:** HTML, Tailwind CSS, Vanilla JS
+- **Deployment:** Render, Vercel, or Railway (free)
+
+---
+
+## ⚡ Endpoints
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST   | `/api/links` | Create a new short link |
+| GET    | `/api/links` | List all links |
+| GET    | `/api/links/:code` | Get stats for one link |
+| DELETE | `/api/links/:code` | Delete a link |
+
+### Pages / Routes
+
+| Path | Purpose |
+|------|---------|
+| `/` | Dashboard (list, add, delete links) |
+| `/code/:code` | Stats page for individual link |
+| `/:code` | Redirect to original URL |
+| `/healthz` | Health check (returns status 200) |
+
+---
+
+## 📌 Usage
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone <your-github-url>
+cd tinylink

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TinyLink Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-100 font-sans flex flex-col min-h-screen">
+
+  <!-- Main Content -->
+  <div class="p-6 flex-1">
+
+    <h1 class="text-3xl font-bold mb-4 flex items-center gap-2">
+      <img src="https://img.icons8.com/color/48/000000/link--v1.png" class="w-10" alt="logo"/>
+      TinyLink Dashboard
+    </h1>
+
+    <!-- Shorten URL form -->
+    <div class="mb-6">
+      <input id="originalUrl" type="text" placeholder="Type your URL here..." class="p-2 rounded w-2/3 mr-2" />
+      <input id="customCode" type="text" placeholder="Custom code (optional)" class="p-2 rounded w-1/4 mr-2"/>
+      <button onclick="shortenLink()" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Shorten</button>
+      <p id="shortLink" class="mt-2 text-blue-600 break-all"></p>
+    </div>
+
+    <!-- Links table -->
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-orange-200">
+          <th class="border px-2 py-1">Short Code</th>
+          <th class="border px-2 py-1">Original URL</th>
+          <th class="border px-2 py-1">Clicks</th>
+          <th class="border px-2 py-1">Last Clicked</th>
+          <th class="border px-2 py-1">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="linksTable"></tbody>
+    </table>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-orange-200 text-center p-4 mt-auto">
+    Made by <span class="font-bold">Shravya Reddy</span>
+  </footer>
+
+<script>
+async function fetchLinks() {
+  const res = await fetch('/api/links');
+  const data = await res.json();
+  const table = document.getElementById('linksTable');
+  table.innerHTML = '';
+  data.forEach(link => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="border px-2 py-1">${link.short_id}</td>
+      <td class="border px-2 py-1"><a href="${link.original_url}" target="_blank" class="text-blue-600">${link.original_url}</a></td>
+      <td class="border px-2 py-1">${link.clicks}</td>
+      <td class="border px-2 py-1">${link.last_clicked || '-'}</td>
+      <td class="border px-2 py-1"><button onclick="deleteLink('${link.short_id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button></td>
+    `;
+    table.appendChild(tr);
+  });
+}
+
+async function shortenLink() {
+  const originalUrl = document.getElementById('originalUrl').value;
+  const customCode = document.getElementById('customCode').value || undefined;
+  try {
+    const res = await fetch('/api/links', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalUrl, customCode })
+    });
+    const data = await res.json();
+    const shortLinkElem = document.getElementById('shortLink');
+    if (res.ok) {
+      shortLinkElem.innerHTML = `<a href="${data.shortUrl}" target="_blank" rel="noopener noreferrer">${data.shortUrl}</a>`;
+      fetchLinks();
+    } else {
+      shortLinkElem.textContent = data.error;
+    }
+  } catch (err) {
+    document.getElementById('shortLink').textContent = 'Server error';
+  }
+}
+
+async function deleteLink(code) {
+  await fetch(`/api/links/${code}`, { method: 'DELETE' });
+  fetchLinks();
+}
+
+// Load dashboard on page load
+fetchLinks();
+</script>
+
+</body>
+</html>

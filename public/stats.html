@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TinyLink Stats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-50 min-h-screen flex flex-col items-center p-4">
+  <header class="flex items-center gap-2 mb-6">
+    <img src="https://img.icons8.com/fluency/48/000000/link--v1.png" alt="Logo" class="w-10 h-10">
+    <h1 class="text-3xl font-bold">Link Stats</h1>
+  </header>
+
+  <div class="w-full max-w-md bg-white shadow-lg p-6 rounded-lg" id="statsContainer">
+    <p>Loading...</p>
+  </div>
+
+  <footer class="mt-auto text-gray-600">Created by Shravya Reddy</footer>
+
+  <script>
+    const container = document.getElementById('statsContainer');
+    const code = window.location.pathname.split('/').pop();
+
+    async function fetchStats() {
+      const res = await fetch('/api/links/' + code);
+      const data = await res.json();
+      if (res.ok) {
+        container.innerHTML = `
+          <p><strong>Short Code:</strong> ${data.short_id}</p>
+          <p><strong>Original URL:</strong> <a href="${data.original_url}" target="_blank">${data.original_url}</a></p>
+          <p><strong>Total Clicks:</strong> ${data.clicks}</p>
+          <p><strong>Last Clicked:</strong> ${data.last_clicked || 'Never'}</p>
+        `;
+      } else {
+        container.innerHTML = `<p>${data.error}</p>`;
+      }
+    }
+
+    fetchStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TinyLink - URL Shortener</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #fff0f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      padding: 50px 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      width: 380px;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ff6b3c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .logo span {
+      width: 40px;
+      height: 40px;
+      background: #ff6b3c;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+      position: relative;
+    }
+
+    .logo span::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      outline: none;
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+      caret-color: #ff6b3c;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(45deg, #ff6b3c, #ff8b5c);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(255, 107, 60, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(255, 107, 60, 0.5);
+    }
+
+    .result {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.2);
+      padding: 12px;
+      border-radius: 12px;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    footer {
+      margin-top: 25px;
+      color: #fff;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo"><span></span>TinyLink</div>
+    <input type="text" id="originalUrl" placeholder="">
+    <button onclick="shortenUrl()">Shorten URL</button>
+    <div class="result" id="result"></div>
+    <footer>Made by Shravya</footer>
+  </div>
+
+  <script>
+    // Typing effect for placeholder
+    const input = document.getElementById('originalUrl');
+    const text = "Type your URL here...";
+    let i = 0;
+
+    function typePlaceholder() {
+      if (i < text.length) {
+        input.setAttribute('placeholder', input.getAttribute('placeholder') + text.charAt(i));
+        i++;
+        setTimeout(typePlaceholder, 150);
+      }
+    }
+
+    typePlaceholder();
+
+    // Shorten URL function
+    async function shortenUrl() {
+      const url = input.value;
+      if (!url) return alert('Please enter a URL');
+
+      try {
+        const response = await fetch('/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ originalUrl: url })
+        });
+
+        const data = await response.json();
+        if (data.shortUrl) {
+          document.getElementById('result').innerHTML = `
+            Short URL: <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>
+          `;
+        } else {
+          document.getElementById('result').innerText = 'Error shortening URL';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('result').innerText = 'Server error';
+      }
+    }
+  </script>
+</body>
+</html>
